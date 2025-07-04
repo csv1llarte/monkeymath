@@ -51,6 +51,7 @@ export default function Home() {
         )}
         
         <div className={styles.quoteContainer}>
+          <div className={styles.movingBackground}></div>
           <div className={styles.quoteText}>
             Train to be Monke
           </div>
