@@ -13,6 +13,7 @@ export default function Home() {
         <p className={styles.subtitle}>Sharpen your skills with our fun typing and math speed tests.</p>
         
         <div className={styles.quoteContainer}>
+          <div className={styles.movingBackground}></div>
           <div className={styles.quoteText}>
             Train to be Monke
           </div>

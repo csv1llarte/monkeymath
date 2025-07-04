@@ -1,28 +1,35 @@
 "use client";
 import { useState } from "react";
+import styles from './page.module.css';
 
 function getQuestion() {
   const ops = ["+", "-", "×", "÷"];
   const op = ops[Math.floor(Math.random() * ops.length)];
-  let a, b, answer;
+  let a, b, answer, display;
+  
   if (op === "+") {
     a = Math.floor(Math.random() * 100) + 1;
     b = Math.floor(Math.random() * 100) + 1;
     answer = a + b;
+    display = `${a} + ${b}`;
   } else if (op === "-") {
     a = Math.floor(Math.random() * 100) + 1;
     b = Math.floor(Math.random() * 100) + 1;
     answer = a - b;
+    display = `${a} - ${b}`;
   } else if (op === "×") {
     a = Math.floor(Math.random() * 20) + 1;
     b = Math.floor(Math.random() * 20) + 1;
     answer = a * b;
+    display = `${a} × ${b}`;
   } else {
     b = Math.floor(Math.random() * 20) + 1;
     answer = Math.floor(Math.random() * 20) + 1;
     a = b * answer;
+    display = `${a} ÷ ${b}`;
   }
-  return { a, b, op, answer };
+  
+  return { a, b, op, answer, display };
 }
 
 export default function HardMathTest() {
@@ -32,12 +39,18 @@ export default function HardMathTest() {
   const [count, setCount] = useState(0);
   const [startTime] = useState(Date.now());
   const [end, setEnd] = useState(false);
+  const [showCorrect, setShowCorrect] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (parseInt(input) === question.answer) {
+    const isCorrect = parseInt(input) === question.answer;
+    
+    if (isCorrect) {
       setScore(score + 1);
+      setShowCorrect(true);
+      setTimeout(() => setShowCorrect(false), 500);
     }
+    
     setInput("");
     if (count >= 9) {
       setEnd(true);
@@ -47,35 +60,185 @@ export default function HardMathTest() {
     }
   };
 
+  const handleBack = () => {
+    window.history.back();
+  };
+
+  const handleRestart = () => {
+    setQuestion(getQuestion());
+    setInput("");
+    setScore(0);
+    setCount(0);
+    setEnd(false);
+    setShowCorrect(false);
+  };
+
   const getTime = () => {
-    if (!end) return ((Date.now() - startTime) / 1000).toFixed(1);
     return ((Date.now() - startTime) / 1000).toFixed(1);
   };
 
+  const getProgress = () => {
+    return ((count + 1) / 10) * 100;
+  };
+
+  const getAccuracy = () => {
+    if (count === 0) return 100;
+    return ((score / (count + 1)) * 100).toFixed(1);
+  };
+
   return (
-    <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', gap: '1.5rem', justifyContent: 'center' }}>
-      <h1>Hard Math Test</h1>
-      {end ? (
-        <div>
-          <h2>Done!</h2>
-          <p>Score: {score} / 10</p>
-          <p>Time: {getTime()} seconds</p>
+    <div className={styles.main}>
+      {/* Success Animation */}
+      {showCorrect && (
+        <div className={styles.successAnimation}>
+          <div className={styles.successIcon}>✓</div>
         </div>
-      ) : (
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ fontSize: '1.5rem' }}>{question.op === "÷" ? `${question.a} ÷ ${question.b}` : `${question.a} ${question.op} ${question.b}`} = ?</div>
-          <input
-            type="number"
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            style={{ fontSize: '1.2rem', padding: '0.5rem', borderRadius: 6 }}
-            required
-            autoFocus
-          />
-          <button type="submit" style={{ padding: '0.5rem 1.5rem', fontSize: '1rem' }}>Next</button>
-          <div>Question {count + 1} / 10</div>
-        </form>
       )}
-    </main>
+
+      <div className={styles.container}>
+        {/* Header with Back Button */}
+        <div className={styles.header}>
+          <button
+            onClick={handleBack}
+            className={styles.backButton}
+          >
+            ← Back
+          </button>
+          <h1 className={styles.title}>
+            🧮 Hard Math Test
+          </h1>
+          <p className={styles.subtitle}>
+            Solve 10 challenging math problems with larger numbers as quickly as possible
+          </p>
+        </div>
+
+        {end ? (
+          /* Results Section */
+          <div className={styles.resultsContainer}>
+            <div className={styles.completionBadge}>
+              <div className={styles.completionIcon}>🎉</div>
+              <h2 className={styles.completionTitle}>Test Completed!</h2>
+            </div>
+
+            <div className={styles.resultsGrid}>
+              <div className={styles.resultCard}>
+                <div className={styles.resultIcon}>🎯</div>
+                <div className={styles.resultLabel}>Score</div>
+                <div className={styles.resultValue}>{score} / 10</div>
+                <div className={styles.resultSubtext}>
+                  {score >= 8 ? 'Excellent!' : score >= 6 ? 'Good job!' : 'Keep practicing!'}
+                </div>
+              </div>
+
+              <div className={styles.resultCard}>
+                <div className={styles.resultIcon}>⏱️</div>
+                <div className={styles.resultLabel}>Time</div>
+                <div className={styles.resultValue}>{getTime()}s</div>
+                <div className={styles.resultSubtext}>
+                  {parseFloat(getTime()) < 60 ? 'Lightning fast!' : 'Nice pace!'}
+                </div>
+              </div>
+
+              <div className={styles.resultCard}>
+                <div className={styles.resultIcon}>📊</div>
+                <div className={styles.resultLabel}>Accuracy</div>
+                <div className={styles.resultValue}>{getAccuracy()}%</div>
+                <div className={styles.resultSubtext}>
+                  {parseFloat(getAccuracy()) >= 90 ? 'Perfect!' : 'Room to improve!'}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.buttonContainer}>
+              <button
+                onClick={handleRestart}
+                className={styles.newTestButton}
+              >
+                🔄 Try Again
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* Test Section */
+          <>
+            {/* Progress Bar */}
+            <div className={styles.progressSection}>
+              <div className={styles.progressBar}>
+                <div 
+                  className={styles.progressFill} 
+                  style={{ width: `${getProgress()}%` }}
+                ></div>
+              </div>
+              <p className={styles.progressText}>
+                Question {count + 1} of 10 • Progress: {Math.round(getProgress())}%
+              </p>
+            </div>
+
+            {/* Question Section */}
+            <div className={styles.questionContainer}>
+              <div className={styles.questionCard}>
+                <div className={styles.questionText}>
+                  <span className={styles.mathExpression}>{question.display}</span>
+                  <span className={styles.equals}>=</span>
+                  <span className={styles.questionMark}>?</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Input Section */}
+            <form onSubmit={handleSubmit} className={styles.inputForm}>
+              <div className={styles.inputContainer}>
+                <input
+                  type="number"
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  className={styles.mathInput}
+                  placeholder="Your answer"
+                  required
+                  autoFocus
+                />
+                <button type="submit" className={styles.submitButton}>
+                  Next →
+                </button>
+              </div>
+            </form>
+
+            {/* Live Stats */}
+            <div className={styles.liveStatsContainer}>
+              <div className={styles.liveStatsGrid}>
+                <div className={styles.liveStat}>
+                  <div className={styles.liveStatIcon}>⚡</div>
+                  <div className={styles.liveStatValue}>{getTime()}s</div>
+                  <div className={styles.liveStatLabel}>Time</div>
+                </div>
+
+                <div className={styles.liveStat}>
+                  <div className={styles.liveStatIcon}>🎯</div>
+                  <div className={styles.liveStatValue}>{score}</div>
+                  <div className={styles.liveStatLabel}>Correct</div>
+                </div>
+
+                <div className={styles.liveStat}>
+                  <div className={styles.liveStatIcon}>📈</div>
+                  <div className={styles.liveStatValue}>{getAccuracy()}%</div>
+                  <div className={styles.liveStatLabel}>Accuracy</div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Instructions */}
+        <div className={styles.instructionsContainer}>
+          <h3 className={styles.instructionsTitle}>
+            How to use:
+          </h3>
+          <p className={styles.instructionsText}>
+            Solve each math problem (+, -, ×, ÷) by entering your answer and pressing Next. 
+            Complete all 10 questions as quickly and accurately as possible. This test includes larger numbers and all four operations.
+          </p>
+        </div>
+      </div>
+    </div>
   );
-} 
+}
