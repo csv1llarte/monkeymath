@@ -16,7 +16,7 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   padding: 3rem;
   text-align: center;
-  max-width: 600px;
+  max-width: 900px;
   width: 100%;
   backdrop-filter: blur(10px);
 }
@@ -146,33 +146,48 @@
 
 .features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
   margin-top: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .featureCard {
   background: #f8f9fa;
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 12px;
   border: 1px solid #e9ecef;
   text-align: center;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
 .featureIcon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
 }
 
 .featureTitle {
   font-weight: 600;
   color: #2c3e50;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
 }
 
 .featureDesc {
   color: #6c757d;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 @media (max-width: 768px) {
@@ -193,5 +208,16 @@
   .testButton {
     width: 100%;
     max-width: 250px;
+  }
+  
+  .features {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    max-width: 100%;
+  }
+  
+  .featureCard {
+    padding: 1.5rem;
+    min-height: 150px;
   }
 }

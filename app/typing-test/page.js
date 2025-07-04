@@ -1,5 +1,8 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../../lib/firebase';
+import { useFirestore } from '../../hooks/useFirestore';
 import styles from './page.module.css';
 
 function getRandomString(arr) {
@@ -16,6 +19,8 @@ const sentenceList = [
 ];
 
 export default function TypingTest() {
+  const [user, loading] = useAuthState(auth);
+  const { saveTestResult, loading: saveLoading } = useFirestore();
   const [input, setInput] = useState("");
   const [started, setStarted] = useState(false);
   const [startTime, setStartTime] = useState(null);
@@ -23,6 +28,7 @@ export default function TypingTest() {
   const [sampleText, setSampleText] = useState(sentenceList[0]);
   const [isClient, setIsClient] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [scoreSaved, setScoreSaved] = useState(false);
   const inputRef = useRef();
 
   useEffect(() => {
@@ -37,6 +43,31 @@ export default function TypingTest() {
     }
   }, [showToast]);
 
+  const saveScore = async () => {
+    if (!user || scoreSaved) return;
+    
+    try {
+      const wpm = getWPM();
+      const accuracy = getAccuracy();
+      const time = getCurrentTime();
+      
+      await saveTestResult(user.uid, {
+        userEmail: user.email,
+        testType: 'typing',
+        score: wpm, // For typing, WPM is the main score
+        accuracy: parseFloat(accuracy),
+        time: time,
+        wpm: wpm,
+        totalQuestions: null,
+        correctAnswers: null
+      });
+      
+      setScoreSaved(true);
+    } catch (error) {
+      console.error('Error saving score:', error);
+    }
+  };
+
   const handleChange = (e) => {
     if (!started) {
       setStarted(true);
@@ -46,6 +77,9 @@ export default function TypingTest() {
     if (e.target.value === sampleText) {
       setEndTime(Date.now());
       setShowToast(true);
+      if (user) {
+        saveScore();
+      }
     }
   };
 
@@ -56,6 +90,7 @@ export default function TypingTest() {
     setEndTime(null);
     setSampleText(getRandomString(sentenceList));
     setShowToast(false);
+    setScoreSaved(false);
     inputRef.current.focus();
   };
 
@@ -124,6 +159,16 @@ export default function TypingTest() {
         <div className={styles.toastTitle}>Test Completed! 🎉</div>
         <div className={styles.toastMessage}>
           {getWPM()} WPM • {getAccuracy()}% Accuracy
+          {user && scoreSaved && (
+            <div style={{ fontSize: '0.8rem', marginTop: '0.25rem', color: '#4caf50' }}>
+              ✓ Score saved to leaderboard!
+            </div>
+          )}
+          {user && !scoreSaved && saveLoading && (
+            <div style={{ fontSize: '0.8rem', marginTop: '0.25rem', color: '#ff9800' }}>
+              Saving score...
+            </div>
+          )}
         </div>
       </div>
 
@@ -142,6 +187,18 @@ export default function TypingTest() {
           <p className={styles.subtitle}>
             Test your typing speed and accuracy with random sentences
           </p>
+          {!user && (
+            <div style={{ 
+              background: 'rgba(255, 193, 7, 0.1)', 
+              padding: '0.5rem 1rem', 
+              borderRadius: '6px', 
+              marginTop: '0.5rem',
+              fontSize: '0.9rem',
+              color: '#f57c00'
+            }}>
+              🔐 Sign in to save your scores to the leaderboard!
+            </div>
+          )}
         </div>
 
         {/* Progress Bar */}
@@ -209,13 +266,8 @@ export default function TypingTest() {
                 <span className={styles.statLabel}>Accuracy</span>
               </div>
               <div className={styles.statValue}>
-                {input.length > 0 ? getAccuracy() : "0"}%
+                {started ? getAccuracy() : "0"}%
               </div>
-              {endTime && (
-                <div className={`${styles.statBadge} ${styles.accuracyBadge}`}>
-                  Completed!
-                </div>
-              )}
             </div>
 
             <div className={styles.statCard}>
@@ -226,24 +278,8 @@ export default function TypingTest() {
               <div className={styles.statValue}>
                 {getCurrentTime()}s
               </div>
-              {endTime && (
-                <div className={`${styles.statBadge} ${styles.timeBadge}`}>
-                  Finished!
-                </div>
-              )}
             </div>
           </div>
-        </div>
-
-        {/* Instructions */}
-        <div className={styles.instructionsContainer}>
-          <h3 className={styles.instructionsTitle}>
-            How to use:
-          </h3>
-          <p className={styles.instructionsText}>
-            Click in the text area and start typing the sentence shown above. 
-            Your typing speed (WPM) and accuracy will be calculated in real-time.
-          </p>
         </div>
       </div>
     </div>

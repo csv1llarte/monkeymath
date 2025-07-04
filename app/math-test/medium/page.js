@@ -1,5 +1,8 @@
 "use client";
 import { useState } from "react";
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../../../lib/firebase';
+import { useFirestore } from '../../../hooks/useFirestore';
 import styles from './page.module.css';
 
 function getQuestion() {
@@ -11,6 +14,8 @@ function getQuestion() {
 }
 
 export default function MediumMathTest() {
+  const [user, loading] = useAuthState(auth);
+  const { saveTestResult, loading: saveLoading } = useFirestore();
   const [question, setQuestion] = useState(getQuestion());
   const [input, setInput] = useState("");
   const [score, setScore] = useState(0);
@@ -18,6 +23,31 @@ export default function MediumMathTest() {
   const [startTime] = useState(Date.now());
   const [end, setEnd] = useState(false);
   const [showCorrect, setShowCorrect] = useState(false);
+  const [scoreSaved, setScoreSaved] = useState(false);
+
+  const saveScore = async () => {
+    if (!user || scoreSaved) return;
+    
+    try {
+      const time = getTime();
+      const accuracy = getAccuracy();
+      
+      await saveTestResult(user.uid, {
+        userEmail: user.email,
+        testType: 'math-medium',
+        score: score,
+        accuracy: parseFloat(accuracy),
+        time: parseFloat(time),
+        wpm: null,
+        totalQuestions: 10,
+        correctAnswers: score
+      });
+      
+      setScoreSaved(true);
+    } catch (error) {
+      console.error('Error saving score:', error);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -32,6 +62,9 @@ export default function MediumMathTest() {
     setInput("");
     if (count >= 9) {
       setEnd(true);
+      if (user) {
+        saveScore();
+      }
     } else {
       setQuestion(getQuestion());
       setCount(count + 1);
@@ -49,6 +82,7 @@ export default function MediumMathTest() {
     setCount(0);
     setEnd(false);
     setShowCorrect(false);
+    setScoreSaved(false);
   };
 
   const getTime = () => {
@@ -88,6 +122,18 @@ export default function MediumMathTest() {
           <p className={styles.subtitle}>
             Solve 10 multiplication and division problems as quickly as possible
           </p>
+          {!user && (
+            <div style={{ 
+              background: 'rgba(255, 193, 7, 0.1)', 
+              padding: '0.5rem 1rem', 
+              borderRadius: '6px', 
+              marginTop: '0.5rem',
+              fontSize: '0.9rem',
+              color: '#f57c00'
+            }}>
+              🔐 Sign in to save your scores to the leaderboard!
+            </div>
+          )}
         </div>
 
         {end ? (
@@ -96,6 +142,26 @@ export default function MediumMathTest() {
             <div className={styles.completionBadge}>
               <div className={styles.completionIcon}>🎉</div>
               <h2 className={styles.completionTitle}>Test Completed!</h2>
+              {user && scoreSaved && (
+                <div style={{ 
+                  fontSize: '0.9rem', 
+                  marginTop: '0.5rem', 
+                  color: '#4caf50',
+                  fontWeight: '500'
+                }}>
+                  ✓ Score saved to leaderboard!
+                </div>
+              )}
+              {user && !scoreSaved && saveLoading && (
+                <div style={{ 
+                  fontSize: '0.9rem', 
+                  marginTop: '0.5rem', 
+                  color: '#ff9800',
+                  fontWeight: '500'
+                }}>
+                  Saving score...
+                </div>
+              )}
             </div>
 
             <div className={styles.resultsGrid}>
