@@ -1,0 +1,337 @@
+/* page.module.css */
+.main {
+  min-height: 100vh;
+  background-color: #f7fafc;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* Toast Notification */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #38a169;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+}
+
+.toastVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toastTitle {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.toastMessage {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #3182ce;
+  margin: 0 0 16px 0;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: #718096;
+  margin: 0;
+}
+
+/* Progress Bar */
+.progressSection {
+  margin-bottom: 32px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 12px;
+  background-color: #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: #3182ce;
+  transition: width 0.3s ease;
+  border-radius: 6px;
+}
+
+.progressText {
+  text-align: center;
+  font-size: 14px;
+  color: #718096;
+  margin: 8px 0 0 0;
+}
+
+/* Sample Text */
+.sampleTextContainer {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  background-color: #ebf8ff;
+  margin-bottom: 32px;
+}
+
+.sampleText {
+  font-size: 1.5rem;
+  line-height: 1.8;
+  font-family: 'Courier New', monospace;
+  color: #2d3748;
+}
+
+.defaultChar {
+  color: #2d3748;
+}
+
+.correctChar {
+  color: #38a169;
+  background-color: #f0fff4;
+  padding: 1px;
+}
+
+.incorrectChar {
+  color: #e53e3e;
+  background-color: #fed7d7;
+  padding: 1px;
+}
+
+.currentChar {
+  background-color: #bee3f8;
+  padding: 1px;
+}
+
+/* Input Section */
+.inputSection {
+  margin-bottom: 32px;
+}
+
+.textInput {
+  width: 100%;
+  min-height: 120px;
+  padding: 16px;
+  font-size: 1.125rem;
+  font-family: 'Courier New', monospace;
+  border: 2px solid #cbd5e0;
+  border-radius: 8px;
+  resize: none;
+  background-color: white;
+  color: #2d3748;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.textInput:focus {
+  border-color: #3182ce;
+}
+
+.buttonContainer {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.newTestButton {
+  background-color: #3182ce;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.newTestButton:hover {
+  background-color: #2c5282;
+}
+
+/* Stats */
+.statsContainer {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 32px;
+  text-align: center;
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.statIcon {
+  font-size: 20px;
+}
+
+.statLabel {
+  color: #718096;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.statValue {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #3182ce;
+  margin-bottom: 8px;
+}
+
+.statCard:nth-child(2) .statValue {
+  color: #38a169;
+}
+
+.statCard:nth-child(3) .statValue {
+  color: #805ad5;
+}
+
+.statBadge {
+  background-color: #38a169;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.accuracyBadge {
+  background-color: #3182ce;
+}
+
+.timeBadge {
+  background-color: #805ad5;
+}
+
+/* Instructions */
+.instructionsContainer {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  background-color: #f7fafc;
+  margin-top: 32px;
+  text-align: center;
+}
+
+.instructionsTitle {
+  color: #2d3748;
+  margin-bottom: 12px;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.instructionsText {
+  color: #718096;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px 12px;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .sampleText {
+    font-size: 1.25rem;
+  }
+  
+  .textInput {
+    font-size: 1rem;
+  }
+  
+  .statsGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .statValue {
+    font-size: 2rem;
+  }
+  
+  .toast {
+    left: 20px;
+    right: 20px;
+    width: auto;
+  }
+}
+.backButton {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  color: #4a5568;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.backButton:hover {
+  background: #f7fafc;
+  border-color: #cbd5e0;
+  color: #2d3748;
+}
+
+.backButton:active {
+  background: #edf2f7;
+}
